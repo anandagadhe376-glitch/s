@@ -3244,6 +3244,12 @@ function setFbBadge(type,text) {
 }
 window.setFbBadge=setFbBadge;
 
+// ── CRITICAL FIX: rid URL param ko pehle set karo, phir fb-ready fire karo ──
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  const rid = p.get('rid') || p.get('restaurantId') || '';
+  if(rid) window._sip_restaurantId = rid; // ensure it's set before any query runs
+})();
 startAdsListener();
 window.dispatchEvent(new CustomEvent('fb-ready'));
 </script>
@@ -3334,13 +3340,6 @@ let isSearchOpen    = false;
   }
   if (!restaurantId) {
     console.error('[Siplora Menu] restaurantId (rid) missing from URL — purana QR code ho sakta hai. Naya QR code billing panel se generate karo.');
-    // Show visible warning banner
-    setTimeout(function() {
-      var warn = document.createElement('div');
-      warn.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#ef4444;color:#fff;text-align:center;padding:10px 16px;font-size:13px;font-weight:700;font-family:system-ui;line-height:1.5';
-      warn.textContent = '⚠️ Menu URL mein Restaurant ID nahi hai. Billing Panel > QR Codes se naya QR generate karo.';
-      document.body && document.body.prepend(warn);
-    }, 800);
   }
 })();
 
