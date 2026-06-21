@@ -3564,7 +3564,9 @@ async function saveDish(){
   const name=document.getElementById('dish-name').value.trim();
   if(!name){ showToast('Enter dish name','warning'); return; }
   const imgData = document.getElementById('dish-img-data').value || '';
-  const imgUrl = document.getElementById('dish-img-url').value.trim() || '';
+  // Clean URL — sirf valid http/https URL ya base64 rakhna hai, HTML strip karo
+  let imgUrl = document.getElementById('dish-img-url').value.trim() || '';
+  if(imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('data:')) imgUrl = '';
   const isHot = document.getElementById('dish-hot-toggle').classList.contains('on');
   const isHotDeal = document.getElementById('dish-hotdeals-toggle').classList.contains('on');
   const isChefPick = document.getElementById('dish-chefpicks-toggle').classList.contains('on');
@@ -3613,7 +3615,7 @@ async function saveDish(){
         showToast(_si(28) + ' '+name+' updated! Menu page is live.','success');
       } else {
         const docRef = await window._sipAddDoc(window.__db,'menuItems', dishData);
-        menuItems.push({...dishData, _fbId: docRef.id});
+        // push nahi karo — onSnapshot khud menuItems update karega, duplicate avoid hoga
         showToast(_si(28) + ' '+name+sectionMsg+' Menu + Order Desk dono pe live! '+_si(46)+'','success');
       }
       save('menu', menuItems);
@@ -6839,7 +6841,7 @@ async function initFirebaseMenuSync(){
       if(typeof window.odRenderDishes==='function') window.odRenderDishes();
       if(typeof window.mpBuildCatStrip==='function') window.mpBuildCatStrip();
       if(typeof window.mpRenderGrid==='function') window.mpRenderGrid();
-      if(fbItems.length > 0) showToast(_si(48) + ' Cloud se '+fbItems.length+' dishes loaded!','success');
+      if(fbItems.length > 0 && !window._fbMenuFirstLoad) { window._fbMenuFirstLoad = true; }
     });
 
     showToast(_si(48) + ' Sync connected — Menu LIVE!','success');
@@ -7384,7 +7386,7 @@ function _getMenuUrl(tableNum){
     const base=saved.trim().replace(/\?.*$/,'').replace(/\/$/, '');
     return base+'?table='+tableNum+ridParam;
   }
-  return 'https://anandagadhe376-glitch.github.io/m/?table='+tableNum+ridParam;
+  return 'https://anandagadhe376-glitch.github.io/siplora-menu/?table='+tableNum+ridParam;
 }
 
 function saveMenuUrl(){
@@ -7398,13 +7400,17 @@ function saveMenuUrl(){
 }
 
 function autoDetectUrl(){
-  const url='https://anandagadhe376-glitch.github.io/m/';
-  const inp=document.getElementById('s-menu-url');
-  if(inp) inp.value=url;
-  const preview=document.getElementById('qr-url-preview');
-  if(preview) preview.textContent=_si(41) + ' Detected: '+url+'?table=1&rid=YOUR_ID';
-  showToast('URL set: '+url,'success');
-  if(document.getElementById('page-qr-tables')?.classList.contains('active')) buildAllQRCodes();
+  if(location.protocol==='http:'||location.protocol==='https:'){
+    const folder=location.href.replace(/[^/]*$/,'');
+    const url=folder+'menu.html';
+    const inp=document.getElementById('s-menu-url');
+    if(inp) inp.value=url;
+    const preview=document.getElementById('qr-url-preview');
+    if(preview) preview.textContent=_si(41) + ' Detected: '+url+'?table=1';
+    showToast('URL auto-detected: '+url,'success');
+  } else {
+    showToast(_si(18) + ' File:// protocol — start Live Server and enter the IP','warning');
+  }
 }
 
 let WA_CONFIG = JSON.parse(localStorage.getItem(window._sipKey('lum_wa_config'))||'{}');
@@ -7588,8 +7594,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(inp){
     if(saved) inp.value=saved;
     else if(location.protocol==='http:'||location.protocol==='https:'){
-      // Default to the correct GitHub Pages menu URL
-      inp.value='https://anandagadhe376-glitch.github.io/m/';
+      inp.value=location.href.replace(/[^/]*$/,'')+'menu.html';
     }
   }
   const preview=document.getElementById('qr-url-preview');
