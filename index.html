@@ -383,7 +383,7 @@ a{text-decoration:none;color:inherit;}
 .cat-section-title{font-family:var(--font-circular);font-size:20px;font-weight:700;color:var(--text2);padding:0 20px 12px;display:flex;align-items:center;gap:10px;}
 
 /* ── DISH GRID ── */
-.dish-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 16px 20px;width:100%;box-sizing:border-box;}@media(min-width:768px){.dish-grid{grid-template-columns:repeat(3,1fr);}}.dish-card{max-width:100%;}
+.dish-grid{display:grid;grid-template-columns:repeat(2,1fr)!important;gap:12px;padding:0 16px 20px;width:100%;box-sizing:border-box;}.dish-card{max-width:100%;}
 .dish-card{border-radius:16px;background:var(--glass);border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:transform 0.2s,box-shadow 0.25s,border-color 0.25s;position:relative;display:flex!important;flex-direction:column!important;width:100%;min-width:0;box-sizing:border-box;}
 .dish-card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(168,85,247,0.2),0 0 20px rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.2);}
 .dish-card:active{transform:scale(0.97);}
@@ -3114,7 +3114,7 @@ window.__loadMenu = async function() {
             priceNum: dish.price,
             rating: dish.rating ? String(dish.rating) : '4.5',
             desc: dish.desc || '',
-            image: dish.imageUrl || '',
+            image: (dish.imageUrl||'').startsWith('http') ? dish.imageUrl : '',
             emoji: dish.emoji||'🍽️',
             veg: dish.type === 'Vegetarian' || dish.type === 'Vegan',
             offer: isHotDeal ? (dish.dealLabel||'🏷️ Hot Deal') : isChefPick ? '👨‍🍳 Chef Pick' : isHot ? '🔥 Hot' : (dish.offerText||null),
