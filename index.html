@@ -3009,7 +3009,7 @@ window.__loadMenu = async function() {
       const billingDishes = [];
       snap2.forEach(d => {
         const raw = {...d.data(), _fbId: d.id};
-        if(raw.imageUrl && raw.imageUrl.startsWith('data:')) raw.imageUrl = '';
+        if(raw.imageUrl && !raw.imageUrl.startsWith('http')) raw.imageUrl = '';
         billingDishes.push(raw);
       });
 
