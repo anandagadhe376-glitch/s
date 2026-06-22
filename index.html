@@ -3850,7 +3850,7 @@ function dishCard(d) {
   // Clean image - sirf valid http/https URL accept karo, baki sab reject
   const cleanImg = (d.image && (d.image.startsWith('http://') || d.image.startsWith('https://') || d.image.startsWith('data:'))) ? d.image : '';
   const imgHtml = cleanImg
-    ? `<img src="${cleanImg}" alt="${d.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#1a1a2e,#13131E)';this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:44px\'>${d.emoji||'🍽️'}</div>';" />`
+    ? `<img src="${cleanImg}" alt="${d.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.src='';this.style.display='none';" />`
     : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:44px;background:linear-gradient(135deg,#1a1a2e,#13131E)">${d.emoji||'🍽️'}</div>`;
   // Live rating from Firebase (stored in window._dishRatings)
   const liveRating = window._dishRatings?.[d.id];
